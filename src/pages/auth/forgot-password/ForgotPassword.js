@@ -5,11 +5,35 @@ import Button from "../../../components/button/Button";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import backgroundImage from "../../../assets/images/background.jpg";
+import { useState } from "react";
+import { authService } from "../../../services/api/auth/auth.service";
 const ForgotPassword = () => {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertType, setAlertType] = useState("");
+  const [responseMessage, setResponseMessage] = useState();
+
+  const forgotPassword = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await authService.forgotPassword(email);
+      setLoading(false);
+      setEmail("");
+      setShowAlert(true);
+      setAlertType("alert-success");
+      setResponseMessage(response?.data?.message);
+    } catch (error) {
+      setAlertType("alert-error");
+      setLoading(false);
+      setShowAlert(true);
+      setResponseMessage(error?.response?.data?.message);
+    }
+  };
   return (
     <div className="container-wrapper" style={{ backgroundImage: `url(${backgroundImage})` }}>
       <div className="container-wrapper-auth">
-        <div className="tabs forgot-password-tabs">
+        <div className="tabs forgot-password-tabs" style={{ height: `${responseMessage} ? '300px': '' ` }}>
           <div className="tabs-auth">
             <ul className="tab-group">
               <li className="tab">
@@ -19,22 +43,29 @@ const ForgotPassword = () => {
 
             <div className="tab-item">
               <div className="auth-inner">
-                {/* <div className="alerts alert-error" role="alert">
-        Error message
-      </div> */}
-                <form className="auth-form">
+                {responseMessage && showAlert && (
+                  <div className={`alerts ${alertType}`} role="alert">
+                    {responseMessage}
+                  </div>
+                )}
+
+                <form className="auth-form" onSubmit={forgotPassword}>
                   <div className="form-input-container">
                     <Input
                       id="passowrd"
                       name="passowrd"
-                      type="password"
-                      value={20}
+                      type="text"
+                      value={email}
                       labelText="Passowrd"
                       placeholder="Enter Passowrd"
-                      onChange={() => {}}
+                      handleChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
-                  <Button label="ForgotPassword" className="auth-button button" disabled={true} />
+                  <Button
+                    label={`${loading ? "IN PROGRESS..." : "CHANGE PASSWORD"}`}
+                    className="auth-button button"
+                    disabled={!email}
+                  />
                   <Link to="/">
                     <span className="forgot-password">
                       <FaArrowLeft className="arrow-left" />
