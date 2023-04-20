@@ -4,6 +4,7 @@ import Button from "../../../components/button/Button";
 import { useState, useEffect } from "react";
 import { Utils } from "../../../services/utils/utils.service";
 import { authService } from "../../../services/api/auth/auth.service";
+import { useNavigate } from "react-router-dom";
 const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ const Register = () => {
   const [alertType, setAlertType] = useState("");
   const [hasError, setHasError] = useState(false);
   const [user, setUser] = useState();
-
+  const navigate = useNavigate();
   const registerUser = async (e) => {
     setLoading(true);
     e.preventDefault();
@@ -47,10 +48,10 @@ const Register = () => {
   useEffect(() => {
     if (loading && !user) return;
     if (user) {
-      console.log("navigate to streams page");
+      navigate("/app/social/streams");
       setLoading(false);
     }
-  }, [user, loading]);
+  }, [user, loading, navigate]);
   return (
     <div className="auth-inner">
       {hasError && errorMessage && (
