@@ -24,8 +24,7 @@
     "prettier:check": "prettier --check 'src/**/*.{js,jsx,json}'",
     "prettier:fix": "prettier --write 'src/**/*.{js,jsx,json}'",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test"
   },
   "eslintConfig": {
     "extends": [
