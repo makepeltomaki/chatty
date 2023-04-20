@@ -4,7 +4,11 @@ import Input from "../../../components/input/Input";
 import Button from "../../../components/button/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { authService } from "../../../services/api/auth/auth.service";
+import useLocalStorage from "../../../hooks/useLocalStorage";
+import useSessionStorage from "../../../hooks/useSessionStorage";
+import { Utils } from "../../../services/utils/utils.service";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,7 +18,11 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [alertType, setAlertType] = useState("");
   const [user, setUser] = useState();
+  const [setStoredUsername] = useLocalStorage("username", "set");
+  const [setLoggedIn] = useLocalStorage("keepLoggedin", "set");
+  const [pageReload] = useSessionStorage("pageReload", "set");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -22,13 +30,14 @@ const Login = () => {
         username,
         password
       });
-      console.log(result);
-      setUser(result.data.user);
       // 1 set logged in to true in local storage
+      setLoggedIn(keepLoggedIn);
       // 2 set username in local storage
+      setStoredUsername(username);
       // 3 dispatch user to redux
       setHasError(false);
       setAlertType("alert-success");
+      Utils.dispatchUser(result, pageReload, dispatch, setUser);
     } catch (error) {
       setLoading(false);
       setHasError(true);
